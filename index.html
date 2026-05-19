@@ -2,28 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>ACE FDC Computer</title>
 
   <style>
+    :root {
+      --bg: #070907;
+      --panel: #0c120c;
+      --panel2: #050805;
+      --green: #00ff66;
+      --green-soft: #9affc2;
+      --white: #ffffff;
+      --yellow: #ffcc66;
+      --red: #ff6666;
+      --border: #00ff66;
+    }
+
     body {
-      background: #0a0a0a;
-      color: #00ff66;
-      font-family: monospace;
-      padding: 15px;
+      background: var(--bg);
+      color: var(--green);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      padding: 14px;
       margin: 0;
     }
 
     h1, h2, h3 {
       text-align: center;
-      margin-bottom: 10px;
+      margin: 12px 0 8px;
+    }
+
+    .subhead {
+      text-align: center;
+      color: var(--green-soft);
+      font-size: 13px;
+      margin-bottom: 12px;
     }
 
     label {
       display: block;
       margin-top: 12px;
       font-size: 14px;
-      color: #9affc2;
+      color: var(--green-soft);
     }
 
     input, select, textarea, button {
@@ -31,127 +50,151 @@
       box-sizing: border-box;
       padding: 13px;
       margin: 6px 0;
-      font-size: 18px;
-      border: none;
-      border-radius: 6px;
-      font-family: monospace;
-    }
-
-    textarea {
-      min-height: 70px;
-      resize: vertical;
+      font-size: 17px;
+      border-radius: 7px;
+      font-family: inherit;
     }
 
     input, select, textarea {
-      background: #111;
-      color: #00ff66;
-      border: 1px solid #00ff66;
+      background: #101510;
+      color: var(--green);
+      border: 1px solid var(--border);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
     }
 
     button {
-      background: #00ff66;
+      background: var(--green);
       color: #000;
-      font-weight: bold;
+      border: 1px solid var(--green);
+      font-weight: 800;
       cursor: pointer;
     }
 
     button.secondary {
-      background: #222;
-      color: #00ff66;
-      border: 1px solid #00ff66;
+      background: #172017;
+      color: var(--green);
+      border: 1px solid var(--green);
     }
 
     button.danger {
-      background: #3a0000;
-      color: #ff6666;
-      border: 1px solid #ff6666;
+      background: #300000;
+      color: var(--red);
+      border: 1px solid var(--red);
     }
 
     .box {
-      border: 1px solid #00ff66;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 6px;
-      background: #050805;
-      font-size: 18px;
+      border: 1px solid var(--border);
+      padding: 14px;
+      margin-top: 14px;
+      border-radius: 8px;
+      background: var(--panel2);
+      font-size: 17px;
       line-height: 1.5;
     }
 
     .small {
-      font-size: 14px;
-      color: #9affc2;
+      font-size: 13px;
+      color: var(--green-soft);
     }
 
-    .warning {
-      color: #ffcc66;
-    }
-
-    .error {
-      color: #ff6666;
-    }
+    .warning { color: var(--yellow); }
+    .error { color: var(--red); }
+    .white { color: var(--white); }
 
     .mission-title {
-      color: #ffffff;
-      font-weight: bold;
+      color: var(--white);
+      font-weight: 800;
       margin-bottom: 8px;
+      letter-spacing: 0.04em;
     }
 
     .mission-card {
-      border: 1px solid #00ff66;
+      border: 1px solid var(--green);
       padding: 12px;
       margin-top: 12px;
-      border-radius: 6px;
-      background: #050805;
+      border-radius: 8px;
+      background: var(--panel);
     }
 
     .mission-card-title {
-      color: #ffffff;
-      font-weight: bold;
+      color: var(--white);
+      font-weight: 800;
       font-size: 18px;
       margin-bottom: 6px;
+    }
+
+    .mission-card-desc {
+      color: var(--green-soft);
+      font-size: 14px;
+      margin: 8px 0;
+      white-space: pre-wrap;
     }
 
     pre {
       white-space: pre-wrap;
       word-break: break-word;
       background: #000;
-      color: #00ff66;
+      color: var(--green);
       border: 1px solid #174d2f;
       padding: 10px;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-block;
+      border: 1px solid var(--green);
+      color: var(--green-soft);
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-top: 4px;
     }
   </style>
 </head>
 
 <body>
-
   <h1>FDC COMPUTER</h1>
-  <p class="small" style="text-align:center;">
-    Arma 3 / ACE-style artillery fire control calculator
-  </p>
+  <div class="subhead">Arma 3 / ACE-style artillery fire control calculator</div>
 
   <h3>Target Reference Point</h3>
 
-  <label>TRP / Mission Name</label>
+  <label>TRP / Fire Mission Name</label>
   <input id="targetName" placeholder="Example: TRP Alpha / Hilltop Compound" />
 
-  <label>Mission Notes</label>
-  <textarea id="targetNotes" placeholder="Example: enemy squad, bunker, vehicle depot, priority target"></textarea>
+  <label>Description / Notes</label>
+  <textarea id="targetDescription" placeholder="Example: Enemy squad in compound, repeatable target, priority fires, good FFE candidate"></textarea>
 
   <h3>Fire Mission</h3>
 
   <label>Gun Grid - 8 digits</label>
-  <input id="gun" inputmode="numeric" placeholder="Example: 03400560" />
+  <input id="gun" inputmode="numeric" autocomplete="off" placeholder="Example: 03400560" />
 
   <label>Target Grid - 8 digits</label>
-  <input id="target" inputmode="numeric" placeholder="Example: 04100630" />
+  <input id="target" inputmode="numeric" autocomplete="off" placeholder="Example: 04100630" />
 
-  <label>Gun Altitude - metres</label>
-  <input id="gunAlt" inputmode="decimal" placeholder="Example: 120" />
-
-  <label>Target Altitude - metres</label>
-  <input id="targetAlt" inputmode="decimal" placeholder="Example: 180" />
+  <div class="row">
+    <div>
+      <label>Gun Altitude - metres</label>
+      <input id="gunAlt" inputmode="decimal" autocomplete="off" placeholder="120" />
+    </div>
+    <div>
+      <label>Target Altitude - metres</label>
+      <input id="targetAlt" inputmode="decimal" autocomplete="off" placeholder="180" />
+    </div>
+  </div>
 
   <label>Weapon System</label>
   <select id="weapon">
@@ -168,15 +211,16 @@
   </div>
 
   <button class="secondary" onclick="copyFireCommand()">COPY FIRE COMMAND</button>
-  <button class="secondary" onclick="saveCurrentMission()">SAVE / UPDATE MISSION THIS SESSION</button>
+  <button class="secondary" onclick="saveCurrentMission(false)">SAVE / UPDATE THIS FIRE MISSION</button>
+  <button class="secondary" onclick="saveCurrentMission(true)">SAVE AS NEW FIRE MISSION</button>
 
   <h3>Observer Adjustment</h3>
 
   <label>Left / Right Correction - metres</label>
-  <input id="lr" inputmode="decimal" placeholder="Left = negative, Right = positive. Example: -50" />
+  <input id="lr" inputmode="decimal" autocomplete="off" placeholder="Left = negative, Right = positive. Example: -50" />
 
   <label>Add / Drop Correction - metres</label>
-  <input id="ad" inputmode="decimal" placeholder="Drop = negative, Add = positive. Example: 100" />
+  <input id="ad" inputmode="decimal" autocomplete="off" placeholder="Drop = negative, Add = positive. Example: 100" />
 
   <button onclick="adjustFire()">APPLY CORRECTION</button>
 
@@ -185,37 +229,32 @@
   </div>
 
   <button class="secondary" onclick="copyAdjustedCommand()">COPY ADJUSTED COMMAND</button>
-  <button class="secondary" onclick="saveCurrentMission()">SAVE ADJUSTED MISSION THIS SESSION</button>
+  <button class="secondary" onclick="saveCurrentMission(false)">SAVE ADJUSTED SOLUTION</button>
 
-  <h3>Saved Missions - This Session Only</h3>
+  <h3>Previous Fire Missions</h3>
 
   <div class="box small">
-    Saved missions are stored only for the current browser/app session using session storage.
-    They should clear when the tab/app session is closed. On iPhone, Safari may sometimes suspend
-    the app instead of fully closing it, so use the wipe button below when you want a guaranteed fresh start.
+    These missions are saved for the current app/browser session only. They should clear after the session is closed. On iPhone, Safari may suspend the app instead of fully closing it, so use <b>NEW SESSION / WIPE DATA</b> when you want a guaranteed clean slate.
   </div>
 
   <button class="danger" onclick="clearAllMissions()">NEW SESSION / WIPE DATA</button>
 
   <div id="savedMissions"></div>
 
-  <h3>Mission Notes</h3>
+  <h3>Notes</h3>
   <div class="box small">
-    <b>Direction:</b> given in NATO mils.<br>
+    <b>Direction:</b> NATO mils, 6400 mils per circle.<br>
     <b>Quadrant:</b> quadrant elevation in mils.<br>
-    <b>Corrections:</b> use observer format. LEFT is negative, RIGHT is positive. DROP is negative, ADD is positive.<br><br>
+    <b>Observer corrections:</b> LEFT negative, RIGHT positive. DROP negative, ADD positive.<br><br>
     <span class="warning">
-      Note: This is an ACE-style ballistic solver with approximate weapon data. For perfect 1:1 ACE matching,
-      export exact projectile values from your Arma/ACE modset.
+      This is an ACE-style ballistic solver with approximate weapon data. For exact ACE parity, export exact projectile and charge data from your active Arma 3 modset.
     </span>
   </div>
 
 <script>
 const G = 9.81;
-const STORAGE_KEY = "ace_fdc_session_missions_v1";
+const STORAGE_KEY = "ace_fdc_session_missions_v2";
 
-// Approximate ACE-style weapon data.
-// Replace these values later with exact data exported from your Arma 3 + ACE modset.
 const weapons = {
   m252: {
     name: "M252 81mm Mortar",
@@ -229,7 +268,6 @@ const weapons = {
       { charge: 5, velocity: 230 }
     ]
   },
-
   mk6: {
     name: "Mk6 82mm Mortar",
     drag: 0.00024,
@@ -242,7 +280,6 @@ const weapons = {
       { charge: 5, velocity: 235 }
     ]
   },
-
   podnos: {
     name: "2B14 Podnos",
     drag: 0.00025,
@@ -255,7 +292,6 @@ const weapons = {
       { charge: 5, velocity: 228 }
     ]
   },
-
   m119: {
     name: "M119 105mm Howitzer",
     drag: 0.00018,
@@ -284,15 +320,8 @@ function cleanGrid(value) {
 
 function gridToXY(value) {
   const grid = cleanGrid(value);
-
-  if (!/^\d{8}$/.test(grid)) {
-    return null;
-  }
-
-  return {
-    x: Number(grid.slice(0, 4)),
-    y: Number(grid.slice(4, 8))
-  };
+  if (!/^\d{8}$/.test(grid)) return null;
+  return { x: Number(grid.slice(0, 4)), y: Number(grid.slice(4, 8)) };
 }
 
 function xyToGrid(pos) {
@@ -310,52 +339,35 @@ function distanceMeters(gun, target) {
 function directionMils(gun, target) {
   const dx = target.x - gun.x;
   const dy = target.y - gun.y;
-
   const degrees = (Math.atan2(dx, dy) * 180 / Math.PI + 360) % 360;
-
-  // NATO mils: 6400 mils in a circle.
   return degrees * (6400 / 360);
 }
 
 function simulateTrajectory(velocity, angleRadians, drag, heightDiff) {
   let vx = velocity * Math.cos(angleRadians);
   let vy = velocity * Math.sin(angleRadians);
-
   let x = 0;
   let y = 0;
   let t = 0;
-
   const dt = 0.02;
   const maxTime = 180;
   const maxRange = 30000;
 
   while (t < maxTime && x < maxRange) {
     const speed = Math.sqrt(vx * vx + vy * vy);
-
-    if (speed <= 0.001) {
-      break;
-    }
+    if (speed <= 0.001) break;
 
     const dragForce = drag * speed * speed;
-
     vx += (-dragForce * (vx / speed)) * dt;
     vy += (-G - dragForce * (vy / speed)) * dt;
-
     x += vx * dt;
     y += vy * dt;
     t += dt;
 
-    // Impact condition.
-    if (y <= heightDiff && t > 0.1 && vy < 0) {
-      break;
-    }
+    if (y <= heightDiff && t > 0.1 && vy < 0) break;
   }
 
-  return {
-    range: x,
-    time: t,
-    finalY: y
-  };
+  return { range: x, time: t, finalY: y };
 }
 
 function solveElevation(range, velocity, drag, heightDiff) {
@@ -365,12 +377,8 @@ function solveElevation(range, velocity, drag, heightDiff) {
   for (let i = 0; i < 30; i++) {
     const mid = (low + high) / 2;
     const result = simulateTrajectory(velocity, mid, drag, heightDiff);
-
-    if (result.range > range) {
-      high = mid;
-    } else {
-      low = mid;
-    }
+    if (result.range > range) high = mid;
+    else low = mid;
   }
 
   return (low + high) / 2;
@@ -380,7 +388,6 @@ function computeSolution(gun, target, weapon, gunAlt, targetAlt) {
   const range = distanceMeters(gun, target);
   const direction = directionMils(gun, target);
   const heightDiff = targetAlt - gunAlt;
-
   let best = null;
 
   for (const chargeData of weapon.charges) {
@@ -389,19 +396,11 @@ function computeSolution(gun, target, weapon, gunAlt, targetAlt) {
     const error = Math.abs(sim.range - range);
 
     if (!best || error < best.error) {
-      best = {
-        charge: chargeData.charge,
-        velocity: chargeData.velocity,
-        angle,
-        tof: sim.time,
-        error
-      };
+      best = { charge: chargeData.charge, velocity: chargeData.velocity, angle, tof: sim.time, error };
     }
   }
 
-  if (!best) {
-    return null;
-  }
+  if (!best) return null;
 
   const quadrantElevation = best.angle * (180 / Math.PI) * (6400 / 360);
 
@@ -421,9 +420,17 @@ function formatMils(value) {
   return String(Math.round(value)).padStart(4, "0");
 }
 
+function currentMissionName() {
+  return document.getElementById("targetName").value.trim() || "UNNAMED";
+}
+
+function currentMissionDescription() {
+  return document.getElementById("targetDescription").value.trim();
+}
+
 function formatFireCommand(solution) {
   return [
-    `TRP ${document.getElementById("targetName").value.trim() || "UNNAMED"}`,
+    `TRP ${currentMissionName()}`,
     `WEAPON ${solution.weaponName}`,
     `RANGE ${Math.round(solution.range)}M`,
     `DIRECTION ${formatMils(solution.direction)}`,
@@ -439,22 +446,18 @@ function fireMission() {
   targetPos = gridToXY(document.getElementById("target").value);
 
   if (!gunPos || !targetPos) {
-    document.getElementById("fireOutput").innerHTML =
-      `<span class="error">Invalid grid. Use 8 digits, for example 03400560.</span>`;
+    document.getElementById("fireOutput").innerHTML = `<span class="error">Invalid grid. Use 8 digits, for example 03400560.</span>`;
     return;
   }
 
   const gunAlt = parseFloat(document.getElementById("gunAlt").value) || 0;
   const targetAlt = parseFloat(document.getElementById("targetAlt").value) || 0;
-
   const weaponKey = document.getElementById("weapon").value;
   weaponSel = weapons[weaponKey];
 
   const solution = computeSolution(gunPos, targetPos, weaponSel, gunAlt, targetAlt);
-
   if (!solution) {
-    document.getElementById("fireOutput").innerHTML =
-      `<span class="error">No valid solution found.</span>`;
+    document.getElementById("fireOutput").innerHTML = `<span class="error">No valid solution found.</span>`;
     return;
   }
 
@@ -464,8 +467,9 @@ function fireMission() {
 
   document.getElementById("fireOutput").innerHTML = `
     <div class="mission-title">FIRE COMMAND</div>
-    TRP ${escapeHtml(document.getElementById("targetName").value.trim() || "UNNAMED")}<br>
-    WEAPON ${solution.weaponName}<br>
+    TRP ${escapeHtml(currentMissionName())}<br>
+    ${currentMissionDescription() ? `DESCRIPTION ${escapeHtml(currentMissionDescription())}<br>` : ""}
+    WEAPON ${escapeHtml(solution.weaponName)}<br>
     RANGE ${Math.round(solution.range)}M<br>
     DIRECTION ${formatMils(solution.direction)}<br>
     CHARGE ${solution.charge}<br>
@@ -476,44 +480,31 @@ function fireMission() {
     SOLVER ERROR ${solution.error.toFixed(1)}M
   `;
 
-  document.getElementById("adjustOutput").innerHTML =
-    "Enter observer correction after observing impact.";
-
+  document.getElementById("adjustOutput").innerHTML = "Enter observer correction after observing impact.";
   window.scrollTo(0, document.body.scrollHeight);
 }
 
 function adjustFire() {
   if (!gunPos || !targetPos || !weaponSel || !lastSolution) {
-    document.getElementById("adjustOutput").innerHTML =
-      `<span class="error">Compute initial fire mission first.</span>`;
+    document.getElementById("adjustOutput").innerHTML = `<span class="error">Compute initial fire mission first.</span>`;
     return;
   }
 
   const lr = parseFloat(document.getElementById("lr").value) || 0;
   const ad = parseFloat(document.getElementById("ad").value) || 0;
-
   const gunAlt = parseFloat(document.getElementById("gunAlt").value) || 0;
   const targetAlt = parseFloat(document.getElementById("targetAlt").value) || 0;
 
-  // Convert current direction from mils to radians.
   const directionRad = lastSolution.direction / (6400 / 360) * Math.PI / 180;
-
-  // Observer corrections:
-  // ADD/DROP moves along gun-target line.
-  // LEFT/RIGHT moves perpendicular to gun-target line.
   const dx = (Math.sin(directionRad) * ad) + (Math.cos(directionRad) * lr);
   const dy = (Math.cos(directionRad) * ad) - (Math.sin(directionRad) * lr);
 
-  targetPos = {
-    x: targetPos.x + dx / 10,
-    y: targetPos.y + dy / 10
-  };
+  targetPos = { x: targetPos.x + dx / 10, y: targetPos.y + dy / 10 };
+  document.getElementById("target").value = xyToGrid(targetPos);
 
   const solution = computeSolution(gunPos, targetPos, weaponSel, gunAlt, targetAlt);
-
   if (!solution) {
-    document.getElementById("adjustOutput").innerHTML =
-      `<span class="error">No valid adjusted solution found.</span>`;
+    document.getElementById("adjustOutput").innerHTML = `<span class="error">No valid adjusted solution found.</span>`;
     return;
   }
 
@@ -522,7 +513,8 @@ function adjustFire() {
 
   document.getElementById("adjustOutput").innerHTML = `
     <div class="mission-title">ADJUSTED FIRE</div>
-    TRP ${escapeHtml(document.getElementById("targetName").value.trim() || "UNNAMED")}<br>
+    TRP ${escapeHtml(currentMissionName())}<br>
+    ${currentMissionDescription() ? `DESCRIPTION ${escapeHtml(currentMissionDescription())}<br>` : ""}
     DIRECTION ${formatMils(solution.direction)}<br>
     CHARGE ${solution.charge}<br>
     QUADRANT ${formatMils(solution.quadrantElevation)}<br>
@@ -551,93 +543,94 @@ function setSavedMissions(missions) {
 }
 
 function makeMissionId() {
-  if (window.crypto && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
   return "mission-" + Date.now() + "-" + Math.floor(Math.random() * 1000000);
 }
 
-function saveCurrentMission() {
+function saveCurrentMission(saveAsNew) {
   if (!lastSolution || !gunPos || !targetPos || !weaponSel) {
     alert("Compute a fire mission first.");
     return;
   }
 
   const missions = getSavedMissions();
+  const id = saveAsNew ? makeMissionId() : (activeMissionId || makeMissionId());
 
   const mission = {
-    id: activeMissionId || makeMissionId(),
-    name: document.getElementById("targetName").value.trim() || "Unnamed TRP",
-    notes: document.getElementById("targetNotes").value.trim(),
+    id,
+    name: currentMissionName(),
+    description: currentMissionDescription(),
     gunGrid: cleanGrid(document.getElementById("gun").value),
     targetGrid: xyToGrid(targetPos),
     gunAlt: document.getElementById("gunAlt").value || "0",
     targetAlt: document.getElementById("targetAlt").value || "0",
     weaponKey: document.getElementById("weapon").value,
+    weaponName: weaponSel.name,
     fireCommand: lastAdjustedCommand || lastFireCommand,
+    solution: {
+      range: Math.round(lastSolution.range),
+      direction: formatMils(lastSolution.direction),
+      charge: lastSolution.charge,
+      quadrant: formatMils(lastSolution.quadrantElevation),
+      tof: lastSolution.tof.toFixed(1),
+      splash: Math.round(lastSolution.tof),
+      heightDiff: lastSolution.heightDiff.toFixed(0),
+      error: lastSolution.error.toFixed(1)
+    },
     savedAt: new Date().toLocaleString()
   };
 
   const existingIndex = missions.findIndex(m => m.id === mission.id);
-
-  if (existingIndex >= 0) {
-    missions[existingIndex] = mission;
-  } else {
-    missions.unshift(mission);
-  }
+  if (existingIndex >= 0) missions[existingIndex] = mission;
+  else missions.unshift(mission);
 
   activeMissionId = mission.id;
   setSavedMissions(missions);
   renderSavedMissions();
-
-  alert("Mission saved for this session.");
+  alert("Fire mission saved for this session.");
 }
 
 function recallMission(id) {
-  const missions = getSavedMissions();
-  const mission = missions.find(m => m.id === id);
-
+  const mission = getSavedMissions().find(m => m.id === id);
   if (!mission) {
     alert("Mission not found.");
     return;
   }
 
   activeMissionId = mission.id;
-
-  document.getElementById("targetName").value = mission.name;
-  document.getElementById("targetNotes").value = mission.notes || "";
-  document.getElementById("gun").value = mission.gunGrid;
-  document.getElementById("target").value = mission.targetGrid;
-  document.getElementById("gunAlt").value = mission.gunAlt;
-  document.getElementById("targetAlt").value = mission.targetAlt;
-  document.getElementById("weapon").value = mission.weaponKey;
+  document.getElementById("targetName").value = mission.name || "";
+  document.getElementById("targetDescription").value = mission.description || "";
+  document.getElementById("gun").value = mission.gunGrid || "";
+  document.getElementById("target").value = mission.targetGrid || "";
+  document.getElementById("gunAlt").value = mission.gunAlt || "0";
+  document.getElementById("targetAlt").value = mission.targetAlt || "0";
+  document.getElementById("weapon").value = mission.weaponKey || "m252";
 
   fireMission();
+  document.getElementById("fireOutput").scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
-  alert("Mission recalled.");
+function copySavedCommand(id) {
+  const mission = getSavedMissions().find(m => m.id === id);
+  if (!mission) {
+    alert("Mission not found.");
+    return;
+  }
+  copyText(mission.fireCommand || "");
 }
 
 function deleteMission(id) {
   const missions = getSavedMissions().filter(m => m.id !== id);
   setSavedMissions(missions);
+  if (activeMissionId === id) activeMissionId = null;
   renderSavedMissions();
-
-  if (activeMissionId === id) {
-    activeMissionId = null;
-  }
 }
 
 function clearAllMissions() {
-  if (!confirm("Clear all saved missions for this session?")) {
-    return;
-  }
-
+  if (!confirm("Clear all saved fire missions for this session?")) return;
   sessionStorage.removeItem(STORAGE_KEY);
   activeMissionId = null;
   renderSavedMissions();
-
-  alert("Session data cleared.");
 }
 
 function renderSavedMissions() {
@@ -645,29 +638,28 @@ function renderSavedMissions() {
   const missions = getSavedMissions();
 
   if (!missions.length) {
-    container.innerHTML = `
-      <div class="box small">
-        No saved fire missions this session.
-      </div>
-    `;
+    container.innerHTML = `<div class="box small">No previous fire missions saved this session.</div>`;
     return;
   }
 
-  container.innerHTML = missions.map(mission => `
+  container.innerHTML = missions.map(m => `
     <div class="mission-card">
-      <div class="mission-card-title">${escapeHtml(mission.name)}</div>
+      <div class="mission-card-title">${escapeHtml(m.name || "Unnamed TRP")}</div>
+      <span class="pill">${escapeHtml(m.weaponName || m.weaponKey || "Weapon")}</span>
+      <span class="pill">Saved ${escapeHtml(m.savedAt || "")}</span>
+
+      ${m.description ? `<div class="mission-card-desc">${escapeHtml(m.description)}</div>` : ""}
+
       <div class="small">
-        Saved: ${escapeHtml(mission.savedAt)}<br>
-        Gun: ${escapeHtml(mission.gunGrid)} |
-        Target: ${escapeHtml(mission.targetGrid)}<br>
-        Weapon: ${escapeHtml(mission.weaponKey)}<br>
-        ${mission.notes ? `Notes: ${escapeHtml(mission.notes)}<br>` : ""}
+        Gun ${escapeHtml(m.gunGrid || "")} | Target ${escapeHtml(m.targetGrid || "")}<br>
+        Gun Alt ${escapeHtml(m.gunAlt || "0")}m | Target Alt ${escapeHtml(m.targetAlt || "0")}m
       </div>
 
-      <pre>${escapeHtml(mission.fireCommand || "")}</pre>
+      <pre>${escapeHtml(m.fireCommand || "")}</pre>
 
-      <button onclick="recallMission('${mission.id}')">RECALL</button>
-      <button class="danger" onclick="deleteMission('${mission.id}')">DELETE</button>
+      <button onclick="recallMission('${m.id}')">RECALL + RECALCULATE</button>
+      <button class="secondary" onclick="copySavedCommand('${m.id}')">COPY SAVED SOLUTION</button>
+      <button class="danger" onclick="deleteMission('${m.id}')">DELETE</button>
     </div>
   `).join("");
 }
@@ -691,7 +683,7 @@ function copyFireCommand() {
 }
 
 function copyAdjustedCommand() {
-  copyText(lastAdjustedCommand);
+  copyText(lastAdjustedCommand || lastFireCommand);
 }
 
 function escapeHtml(value) {
@@ -705,6 +697,5 @@ function escapeHtml(value) {
 
 renderSavedMissions();
 </script>
-
 </body>
 </html>
