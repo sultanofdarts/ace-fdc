@@ -217,17 +217,20 @@
       <option value="3">Charge 3 — Single4 — 648.0 m/s</option>
       <option value="4">Charge 4 — Single5 — 810.0 m/s</option>
     </select>
+
     <label for="m777Arc">M777 Trajectory</label>
     <select id="m777Arc">
       <option value="auto">Auto — prefer high angle</option>
       <option value="high">High angle</option>
       <option value="low">Low angle</option>
     </select>
+
     <label for="m777Resistance">ACE Artillery: Air Resistance</label>
     <select id="m777Resistance">
       <option value="off">Disabled (ACE default)</option>
       <option value="on">Enabled — standard conditions</option>
     </select>
+
     <div class="box small">
       M795 HE / Sh_155mm_AMOS. Charge velocities and −3° to 71.7° elevation limits
       come from SOD_M777.pbo. Charges 0–4 match the ACE range table.<br>
@@ -292,47 +295,48 @@ const weapons = {
   // PBO numbers preserve the stored float32 values. Drag is the ACE fallback,
   // not a projectile coefficient defined by SOD_M777.pbo.
   m777: {
-  "name": "M777 155mm Howitzer (SOD)",
-  "source": "SOD_M777.pbo",
-  "magazine": "SOD_mag_155mm_M795",
-  "ammo": "Sh_155mm_AMOS",
-  "initSpeed": 810,
-  "drag": 6e-05,
-  "minElevation": -3,
-  "maxElevation": 71.69999694824219,
-  "charges": [
-    {
-      "charge": 0,
-      "mode": "Single1",
-      "multiplier": 0.1899999976158142,
-      "velocity": 153.8999980688095
-    },
-    {
-      "charge": 1,
-      "mode": "Single2",
-      "multiplier": 0.30000001192092896,
-      "velocity": 243.00000965595245
-    },
-    {
-      "charge": 2,
-      "mode": "Single3",
-      "multiplier": 0.47999998927116394,
-      "velocity": 388.7999913096428
-    },
-    {
-      "charge": 3,
-      "mode": "Single4",
-      "multiplier": 0.800000011920929,
-      "velocity": 648.0000096559525
-    },
-    {
-      "charge": 4,
-      "mode": "Single5",
-      "multiplier": 1,
-      "velocity": 810
-    }
-  ]
-},
+    name: "M777 155mm Howitzer (SOD)",
+    source: "SOD_M777.pbo",
+    magazine: "SOD_mag_155mm_M795",
+    ammo: "Sh_155mm_AMOS",
+    initSpeed: 810,
+    drag: 0.00006,
+    minElevation: -3,
+    maxElevation: 71.69999694824219,
+    charges: [
+      {
+        charge: 0,
+        mode: "Single1",
+        multiplier: 0.1899999976158142,
+        velocity: 153.8999980688095
+      },
+      {
+        charge: 1,
+        mode: "Single2",
+        multiplier: 0.30000001192092896,
+        velocity: 243.00000965595245
+      },
+      {
+        charge: 2,
+        mode: "Single3",
+        multiplier: 0.47999998927116394,
+        velocity: 388.7999913096428
+      },
+      {
+        charge: 3,
+        mode: "Single4",
+        multiplier: 0.800000011920929,
+        velocity: 648.0000096559525
+      },
+      {
+        charge: 4,
+        mode: "Single5",
+        multiplier: 1,
+        velocity: 810
+      }
+    ]
+  },
+
   m252: {
     name: "M252 81mm Mortar",
     drag: 0.00023,
@@ -345,6 +349,7 @@ const weapons = {
       { charge: 5, velocity: 230 }
     ]
   },
+
   mk6: {
     name: "Mk6 82mm Mortar",
     drag: 0.00024,
@@ -357,6 +362,7 @@ const weapons = {
       { charge: 5, velocity: 235 }
     ]
   },
+
   podnos: {
     name: "2B14 Podnos",
     drag: 0.00025,
@@ -369,6 +375,7 @@ const weapons = {
       { charge: 5, velocity: 228 }
     ]
   },
+
   m119: {
     name: "M119 105mm Howitzer",
     drag: 0.00018,
@@ -398,7 +405,10 @@ function cleanGrid(value) {
 function gridToXY(value) {
   const grid = cleanGrid(value);
   if (!/^\d{8}$/.test(grid)) return null;
-  return { x: Number(grid.slice(0, 4)), y: Number(grid.slice(4, 8)) };
+  return {
+    x: Number(grid.slice(0, 4)),
+    y: Number(grid.slice(4, 8))
+  };
 }
 
 function xyToGrid(pos) {
@@ -427,71 +437,113 @@ function simulateTrajectory(velocity, angleRadians, drag, heightDiff) {
   let vy = velocity * Math.sin(angleRadians);
   let x = 0, y = 0, t = 0;
   const dt = 1 / 60;
+
   for (let step = 0; step < 360 / dt; step++) {
     const previousX = x, previousY = y;
     const speed = Math.hypot(vx, vy);
+
     vx -= drag * speed * vx * dt;
     vy -= (G + drag * speed * vy) * dt;
+
     x += vx * dt;
     y += vy * dt;
     t += dt;
+
     if (vy <= 0 && y <= heightDiff) {
       if (previousY < heightDiff || previousY === y) {
         return { range: 0, time: t, landed: false };
       }
+
       const fraction = (previousY - heightDiff) / (previousY - y);
-      return { range: previousX + fraction * (x - previousX),
-        time: t - dt + fraction * dt, landed: true };
+
+      return {
+        range: previousX + fraction * (x - previousX),
+        time: t - dt + fraction * dt,
+        landed: true
+      };
     }
   }
+
   return { range: 0, time: t, landed: false };
 }
 
-function solveElevation(range, velocity, drag, heightDiff, minAngle = 0.02,
-                        maxAngle = Math.PI / 2 - 0.02, arc = "low") {
-  if (range <= 0 || ![range, velocity, drag, heightDiff].every(Number.isFinite)) return null;
+function solveElevation(
+  range,
+  velocity,
+  drag,
+  heightDiff,
+  minAngle = 0.02,
+  maxAngle = Math.PI / 2 - 0.02,
+  arc = "low"
+) {
+  if (range <= 0 || ![range, velocity, drag, heightDiff].every(Number.isFinite)) {
+    return null;
+  }
+
   if (drag === 0) {
     // ACE's disabled-air-resistance trajectory is the analytic vacuum solution.
     const v2 = velocity * velocity;
     const discriminant = v2 * v2 - G * (G * range * range + 2 * heightDiff * v2);
+
     if (discriminant < 0) return null;
+
     const root = Math.sqrt(discriminant);
-    const angle = Math.atan((v2 + (arc === "high" ? root : -root)) / (G * range));
+    const angle = Math.atan(
+      (v2 + (arc === "high" ? root : -root)) / (G * range)
+    );
+
     return angle >= minAngle && angle <= maxAngle ? angle : null;
   }
+
   const shot = angle => simulateTrajectory(velocity, angle, drag, heightDiff);
+
   // Locate maximum range first: range increases on the low branch and decreases
   // on the high branch. Searching the entire interval as monotonic is incorrect.
-  let left = minAngle, right = maxAngle;
+  let left = minAngle;
+  let right = maxAngle;
+
   for (let i = 0; i < 32; i++) {
     const a = left + (right - left) / 3;
     const b = right - (right - left) / 3;
+
     if (shot(a).range < shot(b).range) left = a;
     else right = b;
   }
+
   let peakAngle = (left + right) / 2;
+
   for (const edge of [minAngle, maxAngle]) {
     if (shot(edge).range > shot(peakAngle).range) peakAngle = edge;
   }
+
   const peak = shot(peakAngle);
   if (!peak.landed || peak.range < range - 0.05) return null;
+
   left = arc === "high" ? peakAngle : minAngle;
   right = arc === "high" ? maxAngle : peakAngle;
+
   const edge = shot(arc === "high" ? right : left);
   if (edge.landed && edge.range > range + 0.05) return null;
+
   for (let i = 0; i < 32; i++) {
     const mid = (left + right) / 2;
     const result = shot(mid);
+
     if ((result.range > range) === (arc === "high")) left = mid;
     else right = mid;
   }
+
   const angle = (left + right) / 2;
   const result = shot(angle);
-  return result.landed && Math.abs(result.range - range) <= 0.5 ? angle : null;
+
+  return result.landed && Math.abs(result.range - range) <= 0.5
+    ? angle
+    : null;
 }
 
 function getBallisticOptions(weapon) {
   if (weapon !== weapons.m777) return { arc: "low", charge: "auto" };
+
   return {
     arc: document.getElementById("m777Arc").value,
     charge: document.getElementById("m777Charge").value,
@@ -499,34 +551,79 @@ function getBallisticOptions(weapon) {
   };
 }
 
-function computeSolution(gun, target, weapon, gunAlt, targetAlt, options = getBallisticOptions(weapon)) {
+function computeSolution(
+  gun,
+  target,
+  weapon,
+  gunAlt,
+  targetAlt,
+  options = getBallisticOptions(weapon)
+) {
   const range = distanceMeters(gun, target);
   const direction = directionMils(gun, target);
   const heightDiff = targetAlt - gunAlt;
-  if (!weapon || range <= 0 || ![range, heightDiff].every(Number.isFinite)) return null;
+
+  if (!weapon || range <= 0 || ![range, heightDiff].every(Number.isFinite)) {
+    return null;
+  }
+
   const isM777 = weapon === weapons.m777;
   const drag = isM777 && !options.resistance ? 0 : weapon.drag;
-  const minAngle = isM777 ? weapon.minElevation * Math.PI / 180 : 0.02;
-  const maxAngle = isM777 ? weapon.maxElevation * Math.PI / 180 : Math.PI / 2 - 0.02;
-  const arcs = options.arc === "auto" ? ["high", "low"] : [options.arc || "low"];
+  const minAngle = isM777
+    ? weapon.minElevation * Math.PI / 180
+    : 0.02;
+  const maxAngle = isM777
+    ? weapon.maxElevation * Math.PI / 180
+    : Math.PI / 2 - 0.02;
+
+  const arcs = options.arc === "auto"
+    ? ["high", "low"]
+    : [options.arc || "low"];
+
   for (const chargeData of weapon.charges) {
-    if (options.charge !== undefined && options.charge !== "auto" &&
-        Number(options.charge) !== chargeData.charge) continue;
+    if (
+      options.charge !== undefined &&
+      options.charge !== "auto" &&
+      Number(options.charge) !== chargeData.charge
+    ) continue;
+
     for (const arc of arcs) {
-      const angle = solveElevation(range, chargeData.velocity, drag, heightDiff, minAngle, maxAngle, arc);
+      const angle = solveElevation(
+        range,
+        chargeData.velocity,
+        drag,
+        heightDiff,
+        minAngle,
+        maxAngle,
+        arc
+      );
+
       if (angle === null) continue;
+
       const sim = drag === 0
-        ? { range, time: range / (chargeData.velocity * Math.cos(angle)) }
+        ? {
+            range,
+            time: range / (chargeData.velocity * Math.cos(angle))
+          }
         : simulateTrajectory(chargeData.velocity, angle, drag, heightDiff);
+
       return {
-        weaponName: weapon.name, range, direction, charge: chargeData.charge,
-        mode: chargeData.mode, velocity: chargeData.velocity, arc,
+        weaponName: weapon.name,
+        range,
+        direction,
+        charge: chargeData.charge,
+        mode: chargeData.mode,
+        velocity: chargeData.velocity,
+        arc,
         resistance: isM777 ? !!options.resistance : undefined,
-        quadrantElevation: angle * 3200 / Math.PI, tof: sim.time,
-        error: Math.abs(sim.range - range), heightDiff
+        quadrantElevation: angle * 3200 / Math.PI,
+        tof: sim.time,
+        error: Math.abs(sim.range - range),
+        heightDiff
       };
     }
   }
+
   return null;
 }
 
@@ -537,11 +634,13 @@ function clearCurrentSolution() {
 }
 
 function updateWeaponSettings() {
-  document.getElementById("m777Settings").hidden = document.getElementById("weapon").value !== "m777";
+  document.getElementById("m777Settings").hidden =
+    document.getElementById("weapon").value !== "m777";
 }
 
 function solutionDetails(solution) {
   if (!solution.mode) return "";
+
   return `MODE ${solution.mode} / ${solution.arc.toUpperCase()} ANGLE<br>
     MUZZLE VELOCITY ${solution.velocity.toFixed(1)}M/S<br>
     ACE AIR RESISTANCE ${solution.resistance ? "ON (15°C, 1.225 KG/M³, NO WIND)" : "OFF"}<br>`;
@@ -566,8 +665,11 @@ function formatFireCommand(solution) {
     `RANGE ${Math.round(solution.range)}M`,
     `DIRECTION ${formatMils(solution.direction)}`,
     `CHARGE ${solution.charge}`,
-    ...(solution.mode ? [`MODE ${solution.mode}`, `TRAJECTORY ${solution.arc.toUpperCase()}`,
-      `ACE AIR RESISTANCE ${solution.resistance ? "ON (15C, 1.225 KG/M3, NO WIND)" : "OFF"}`] : []),
+    ...(solution.mode ? [
+      `MODE ${solution.mode}`,
+      `TRAJECTORY ${solution.arc.toUpperCase()}`,
+      `ACE AIR RESISTANCE ${solution.resistance ? "ON (15C, 1.225 KG/M3, NO WIND)" : "OFF"}`
+    ] : []),
     `QUADRANT ${formatMils(solution.quadrantElevation)}`,
     `TOF ${solution.tof.toFixed(1)}S`,
     `SPLASH ${Math.round(solution.tof)}S`
@@ -576,23 +678,36 @@ function formatFireCommand(solution) {
 
 function fireMission() {
   clearCurrentSolution();
-  document.getElementById("adjustOutput").textContent = "Compute initial fire mission first.";
+
+  document.getElementById("adjustOutput").textContent =
+    "Compute initial fire mission first.";
+
   gunPos = gridToXY(document.getElementById("gun").value);
   targetPos = gridToXY(document.getElementById("target").value);
 
   if (!gunPos || !targetPos) {
-    document.getElementById("fireOutput").innerHTML = `<span class="error">Invalid grid. Use 8 digits, for example 03400560.</span>`;
+    document.getElementById("fireOutput").innerHTML =
+      `<span class="error">Invalid grid. Use 8 digits, for example 03400560.</span>`;
     return;
   }
 
   const gunAlt = parseFloat(document.getElementById("gunAlt").value) || 0;
   const targetAlt = parseFloat(document.getElementById("targetAlt").value) || 0;
   const weaponKey = document.getElementById("weapon").value;
+
   weaponSel = weapons[weaponKey];
 
-  const solution = computeSolution(gunPos, targetPos, weaponSel, gunAlt, targetAlt);
+  const solution = computeSolution(
+    gunPos,
+    targetPos,
+    weaponSel,
+    gunAlt,
+    targetAlt
+  );
+
   if (!solution) {
-    document.getElementById("fireOutput").innerHTML = `<span class="error">No valid solution found for this range, height, charge and elevation limits.</span>`;
+    document.getElementById("fireOutput").innerHTML =
+      `<span class="error">No valid solution found for this range, height, charge and elevation limits.</span>`;
     return;
   }
 
@@ -616,13 +731,16 @@ function fireMission() {
     SOLVER ERROR ${solution.error.toFixed(1)}M
   `;
 
-  document.getElementById("adjustOutput").innerHTML = "Enter observer correction after observing impact.";
+  document.getElementById("adjustOutput").innerHTML =
+    "Enter observer correction after observing impact.";
+
   window.scrollTo(0, document.body.scrollHeight);
 }
 
 function adjustFire() {
   if (!gunPos || !targetPos || !weaponSel || !lastSolution) {
-    document.getElementById("adjustOutput").innerHTML = `<span class="error">Compute initial fire mission first.</span>`;
+    document.getElementById("adjustOutput").innerHTML =
+      `<span class="error">Compute initial fire mission first.</span>`;
     return;
   }
 
@@ -631,17 +749,33 @@ function adjustFire() {
   const gunAlt = parseFloat(document.getElementById("gunAlt").value) || 0;
   const targetAlt = parseFloat(document.getElementById("targetAlt").value) || 0;
 
-  const directionRad = lastSolution.direction / (6400 / 360) * Math.PI / 180;
-  const dx = (Math.sin(directionRad) * ad) + (Math.cos(directionRad) * lr);
-  const dy = (Math.cos(directionRad) * ad) - (Math.sin(directionRad) * lr);
+  const directionRad =
+    lastSolution.direction / (6400 / 360) * Math.PI / 180;
 
-  targetPos = { x: targetPos.x + dx / 10, y: targetPos.y + dy / 10 };
+  const dx =
+    (Math.sin(directionRad) * ad) + (Math.cos(directionRad) * lr);
+  const dy =
+    (Math.cos(directionRad) * ad) - (Math.sin(directionRad) * lr);
+
+  targetPos = {
+    x: targetPos.x + dx / 10,
+    y: targetPos.y + dy / 10
+  };
+
   document.getElementById("target").value = xyToGrid(targetPos);
 
-  const solution = computeSolution(gunPos, targetPos, weaponSel, gunAlt, targetAlt);
+  const solution = computeSolution(
+    gunPos,
+    targetPos,
+    weaponSel,
+    gunAlt,
+    targetAlt
+  );
+
   if (!solution) {
     clearCurrentSolution();
-    document.getElementById("adjustOutput").innerHTML = `<span class="error">No valid adjusted solution found.</span>`;
+    document.getElementById("adjustOutput").innerHTML =
+      `<span class="error">No valid adjusted solution found.</span>`;
     return;
   }
 
@@ -692,7 +826,9 @@ function saveCurrentMission(saveAsNew) {
   }
 
   const missions = getSavedMissions();
-  const id = saveAsNew ? makeMissionId() : (activeMissionId || makeMissionId());
+  const id = saveAsNew
+    ? makeMissionId()
+    : (activeMissionId || makeMissionId());
 
   const mission = {
     id,
@@ -720,23 +856,27 @@ function saveCurrentMission(saveAsNew) {
   };
 
   const existingIndex = missions.findIndex(m => m.id === mission.id);
+
   if (existingIndex >= 0) missions[existingIndex] = mission;
   else missions.unshift(mission);
 
   activeMissionId = mission.id;
   setSavedMissions(missions);
   renderSavedMissions();
+
   alert("Fire mission saved for this session.");
 }
 
 function recallMission(id) {
   const mission = getSavedMissions().find(m => m.id === id);
+
   if (!mission) {
     alert("Mission not found.");
     return;
   }
 
   activeMissionId = mission.id;
+
   document.getElementById("targetName").value = mission.name || "";
   document.getElementById("targetDescription").value = mission.description || "";
   document.getElementById("gun").value = mission.gunGrid || "";
@@ -746,32 +886,45 @@ function recallMission(id) {
   document.getElementById("weapon").value = mission.weaponKey || "m252";
 
   const options = mission.ballisticOptions || {};
+
   document.getElementById("m777Charge").value = options.charge || "auto";
   document.getElementById("m777Arc").value = options.arc || "auto";
-  document.getElementById("m777Resistance").value = options.resistance ? "on" : "off";
+  document.getElementById("m777Resistance").value =
+    options.resistance ? "on" : "off";
+
   updateWeaponSettings();
   fireMission();
-  document.getElementById("fireOutput").scrollIntoView({ behavior: "smooth", block: "start" });
+
+  document.getElementById("fireOutput").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
 function copySavedCommand(id) {
   const mission = getSavedMissions().find(m => m.id === id);
+
   if (!mission) {
     alert("Mission not found.");
     return;
   }
+
   copyText(mission.fireCommand || "");
 }
 
 function deleteMission(id) {
   const missions = getSavedMissions().filter(m => m.id !== id);
+
   setSavedMissions(missions);
+
   if (activeMissionId === id) activeMissionId = null;
+
   renderSavedMissions();
 }
 
 function clearAllMissions() {
   if (!confirm("Clear all saved fire missions for this session?")) return;
+
   sessionStorage.removeItem(STORAGE_KEY);
   activeMissionId = null;
   renderSavedMissions();
@@ -782,7 +935,8 @@ function renderSavedMissions() {
   const missions = getSavedMissions();
 
   if (!missions.length) {
-    container.innerHTML = `<div class="box small">No previous fire missions saved this session.</div>`;
+    container.innerHTML =
+      `<div class="box small">No previous fire missions saved this session.</div>`;
     return;
   }
 
@@ -839,14 +993,28 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-for (const id of ["weapon", "gun", "target", "gunAlt", "targetAlt", "m777Charge", "m777Arc", "m777Resistance"]) {
+for (const id of [
+  "weapon",
+  "gun",
+  "target",
+  "gunAlt",
+  "targetAlt",
+  "m777Charge",
+  "m777Arc",
+  "m777Resistance"
+]) {
   document.getElementById(id).addEventListener("input", () => {
     clearCurrentSolution();
     updateWeaponSettings();
-    document.getElementById("fireOutput").textContent = "Inputs changed. Compute fire to update the solution.";
-    document.getElementById("adjustOutput").textContent = "Compute initial fire mission first.";
+
+    document.getElementById("fireOutput").textContent =
+      "Inputs changed. Compute fire to update the solution.";
+
+    document.getElementById("adjustOutput").textContent =
+      "Compute initial fire mission first.";
   });
 }
+
 updateWeaponSettings();
 renderSavedMissions();
 </script>
